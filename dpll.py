@@ -1,6 +1,7 @@
 import sys
 from copy import deepcopy
 
+
 def read_cnf(filename):
     clauses = []
     with open(filename) as f:
@@ -40,38 +41,38 @@ def remove(unit, clauses):
 def remove_negative(unit, clauses):
     return [[ i for i in clause if i != unit ] for clause in clauses]
 
-def simplifies(old_formula, unit_clauses):
-    
-    formula = old_formula
-    # valoracao = []
+def simplifies(formula, unit_clauses):
     for l in unit_clauses:
-        # valoracao.append(l)
-        formula = remove(l, old_formula)
+        formula = remove(l, formula)
         formula = remove_negative(-l, formula)
     return formula
 
 def dpll(old_formula, old_val, recursion_depth):
+
+    global result
     formula = deepcopy(old_formula)
     val = deepcopy(old_val)
 
-    print "\n# Recursion Depth ", recursion_depth
-    print "# formula",old_formula
-    print "#valoracoes: ", val
+    # print "\n# Recursion Depth ", recursion_depth
+    # print "# formula",formula
+    
     
     unit_clauses = find_unit_clauses(formula)
     for unit_clause in unit_clauses:
         val.append(unit_clause)
-    
+    # print "#unit clauses: ", unit_clauses
     formula = simplifies(formula, unit_clauses)
     
+    # print "# formula simplificada: ",formula
+    # print "#valoracoes: ", val
+
     if(formula == []):
-		print "\n\n************ SAT "
-		return True
+	    result = deepcopy(val)
+	    return True
     elif(empty_clause(formula)):
-		return False
+	    return False
     else:
-		I= formula[0][0];
-		print 'Choosing new literal: ',I
+        I = formula[0][0]
     if(dpll(formula+[[I]],val, recursion_depth+1)):
 		return True
     elif(dpll(formula+[[-I]],val,recursion_depth+1)):
@@ -82,10 +83,19 @@ def dpll(old_formula, old_val, recursion_depth):
 
 
 def main():
-    formula = read_cnf("ex.txt")
-    # print len(formula)
-    print dpll(formula,[], 0)
+    formula = read_cnf("a.txt")
+    satisfabilidade = dpll(formula,[], 0)
 
+    if satisfabilidade:
+        print "************ SAT"
+
+        with open('a-result.txt', 'w') as f:
+            for element in result:
+                if element > 0:
+                    f.write(str(element)+' '+'\n')
+
+    else:
+        print "************ UNSAT"
 
 if __name__ == "__main__":
     main()

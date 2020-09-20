@@ -138,7 +138,7 @@ class FNC
   end
 
   def fnc
-    file = File.open('sudoku.txt', 'w')
+    file = File.open('a.txt', 'w')
     str_units = unit
     file.write(@atoms.to_s + " ")
     file.write(@clauses.to_s + "\n")
@@ -150,5 +150,5 @@ class FNC
   end
 end
 
-fnc = FNC.new('sudoku1.sud')
+fnc = FNC.new('a.sud')
 fnc.fnc
